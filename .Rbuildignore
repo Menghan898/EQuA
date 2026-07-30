@@ -1,0 +1,14 @@
+^\.github$
+^\.Rproj\.user$
+^.*\.Rproj$
+^CITATION\.cff$
+^LICENSE\.md$
+^README\.Rmd$
+^data-raw$
+^development$
+^poster$
+^docs$
+^_pkgdown\.yml$
+^pkgdown$
+^doc$
+^Meta$

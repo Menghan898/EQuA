@@ -1,0 +1,30 @@
+citHeader("To cite EQuA in publications, please use:")
+
+# Software citation generated from the installed package DESCRIPTION.
+citation(auto = meta)
+
+# JSM 2026 poster citation.
+bibentry(
+  bibtype = "Misc",
+  title = paste(
+    "Epigenetic Quantile Age (EQuA) Clocks:",
+    "A New Paradigm for Evaluating Biological Aging Acceleration"
+  ),
+  author = c(
+    person("Menghan", "Yi"),
+    person("Canyi", "Chen"),
+    person("Yahui", "Zhang"),
+    person("Karen E.", "Peterson"),
+    person("Jaclyn M.", "Goodrich"),
+    person("Peter X.-K.", "Song")
+  ),
+  year = "2026",
+  note = paste(
+    "Poster presented at the Joint Statistical Meetings,",
+    "Boston, Massachusetts"
+  ),
+  url = paste0(
+    "https://github.com/Menghan898/EQuA/blob/main/poster/",
+    "EQuA_JSM2026_Poster.pdf"
+  )
+)

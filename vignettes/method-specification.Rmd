@@ -1,0 +1,320 @@
+---
+title: "EQuA Statistical Method Specification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EQuA Statistical Method Specification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Purpose and status
+
+This document records the numerical contract implemented by the current
+pure-R reference version of EQuA. A convention labeled **Implemented** is
+covered by regression tests. Later changes that can alter results must be
+recorded in `NEWS.md`.
+
+| Decision | Current convention |
+|:--|:--|
+| CA, EA, EAD, qEA, and qEAA signs | **Implemented** |
+| Weighted quantile and ties | **Implemented:** left-continuous inverse, no interpolation |
+| Kernel | **Implemented:** product Gaussian kernel |
+| Default bandwidth | **Implemented:** reproduction-program rule, selected in every training set |
+| Cross-fitting folds | **Implemented:** CA-stratified repeated K-fold |
+| Missing values | **Implemented:** method-specific complete cases |
+| Internal scaling | **Implemented:** raw-unit-equivalent transformation |
+| Support behavior | **Implemented:** warning by default, no implicit fallback |
+| Repeated-profile aggregation | **Implemented:** pointwise median by default |
+
+# Scope and non-goals
+
+EQuA is a post-hoc calibration layer for an existing scalar age estimator. Its
+inputs are chronological age, estimated age, and optional numeric conditioning
+variables. Its outputs are percentile-resolved qEA and qEAA profiles.
+Chronological age and estimated age must use the same measurement units.
+
+The package does not preprocess methylation data, estimate DNA methylation
+clocks, or require access to the source estimator's training data.
+
+# Notation and target quantities
+
+Let \(\mathrm{CA}\) denote chronological age and \(\mathrm{EA}\) the output of
+an existing age estimator. EQuA defines
+
+\[
+\mathrm{EAD} = \mathrm{CA} - \mathrm{EA}.
+\]
+
+For percentile level \(\tau\),
+
+\[
+\mathrm{qEA}_{\tau}
+=
+\mathrm{EA}
++
+Q_{\tau}(\mathrm{EAD}\mid\mathcal{C}),
+\]
+
+where \(\mathcal{C}\) is the conditioning information for the selected
+formulation. Quantile age acceleration is
+
+\[
+\mathrm{qEAA}_{\tau}
+=
+\mathrm{qEA}_{\tau} - \mathrm{CA}.
+\]
+
+# Formulations
+
+The implemented formulations are:
+
+1. **Po-EQuA:** \(\mathcal{C}=\varnothing\), giving
+   \(Q_\tau(\mathrm{EAD})\).
+2. **Kernel End-EQuA:** \(\mathcal{C}=\mathrm{EA}\), giving
+   \(Q_\tau\{\mathrm{EAD}\mid\mathrm{EA}\}\).
+3. **Kernel Ex-EQuA:** \(\mathcal{C}=(\mathrm{EA},Z)\), giving
+   \(Q_\tau\{\mathrm{EAD}\mid\mathrm{EA},Z\}\).
+
+The current Ex interface accepts named numeric conditioning variables.
+
+# Weighted empirical quantiles
+
+For finite EAD values \(y_i\) with positive finite weights \(w_i\), normalized
+weights are
+
+\[
+\widetilde{w}_i = \frac{w_i}{\sum_\ell w_\ell}.
+\]
+
+The weighted empirical distribution and quantile are
+
+\[
+\widehat F_w(y)
+=
+\sum_i \widetilde{w}_i I(y_i \le y),
+\qquad
+\widehat Q_\tau
+=
+\inf\{y:\widehat F_w(y)\ge\tau\}.
+\]
+
+The implementation sorts EAD values and returns the first value whose
+cumulative normalized weight is at least \(\tau\). It does not interpolate.
+Tied EAD outcomes therefore return the tied value. Percentile levels must be
+strictly increasing and strictly between zero and one. Non-finite outcomes,
+non-finite weights, and non-positive weights are omitted; if no usable weight
+remains, the quantile is `NA`.
+
+Po-EQuA uses equal weights, so this definition is equivalent to an empirical
+type-1 quantile.
+
+# Kernel and bandwidth
+
+For conditioning vector \(\mathbf{x}\), EQuA uses the product Gaussian kernel
+
+\[
+w_i(\mathbf{x})
+\propto
+\prod_{j=1}^{d}
+\exp\left[
+-\frac{1}{2}
+\left(
+\frac{x_j-X_{ij}}{h_j}
+\right)^2
+\right].
+\]
+
+The Gaussian normalizing constant is omitted because the weights are
+normalized before calculating a quantile. One bandwidth is selected for each
+conditioning dimension, and the same bandwidth vector is shared by all
+percentile levels.
+
+For a training-set variable \(X_j\), the default raw-unit bandwidth is
+
+\[
+h_j =
+\max\left\{
+1.06\,s_j n^{-1/(4+d)},
+\ 0.25\,\mathrm{IQR}(X_j),
+\ 0.05\,\mathrm{range}(X_j),
+\ 10^{-6}
+\right\},
+\]
+
+where \(n\) is the number of complete training rows, \(d\) is the number of
+conditioning dimensions, and \(s_j\) is the sample standard deviation. Thus
+Kernel End uses exponent \(1/5\), while Kernel Ex uses \(1/(4+d)\). Within
+cross-fitting, every training fold selects its own bandwidths. User-supplied
+bandwidths must be positive, finite, have one value per conditioning
+dimension, and are interpreted in the original variable units.
+
+A zero-variance conditioning variable causes an error because its kernel
+distance is undefined.
+
+# Unit-invariant internal scaling
+
+The statistical definition and automatic bandwidth rule are evaluated in the
+original units of each conditioning variable. Internally, the calibration
+mean and sample standard deviation are used to transform each dimension. The
+raw bandwidth is divided by the same standard deviation, so
+
+\[
+\frac{(x_j-\bar X_j)/s_j-(X_{ij}-\bar X_j)/s_j}{h_j/s_j}
+=
+\frac{x_j-X_{ij}}{h_j}.
+\]
+
+The calibration transformation is stored in the fitted object and reused for
+new observations. Therefore a pure linear change of measurement units leaves
+kernel ratios and predictions unchanged, apart from floating-point tolerance.
+The inherited absolute \(10^{-6}\) bandwidth floor is an exception in the
+degenerate numerical regime where every scale-dependent candidate is smaller
+than that floor.
+
+# Cross-fitting
+
+`crossfit_equa()` uses repeated chronological-age-stratified K-fold
+cross-fitting:
+
+1. Select method-specific complete rows.
+2. Sort rows by chronological age, breaking age ties by input order.
+3. Form up to `n_strata` approximately equal age strata.
+4. Randomize rows within each stratum and assign fold labels cyclically from
+   1 through K.
+5. Fit on K-1 folds and predict the held-out fold.
+6. Repeat with repeat-specific seed `seed + 100 * repeat_id`.
+7. Aggregate each observation and percentile point across repeats by the
+   median; `aggregate = "mean"` is also available.
+
+The default is K = 5, 50 repeats, 10 maximum strata, and median aggregation.
+For ordinary cohort sizes of at least \(K\times\texttt{n_strata}\), the
+stratification matches the reproducibility workflow. For smaller samples, the
+package reduces the number of strata so every fold receives observations.
+
+The public API does not require or store participant identifiers. The earlier
+cohort scripts used sample ID to break exact age ties and added a
+dataset-specific offset to the repeat seed. To reproduce such a run exactly,
+order tied-age inputs as in the cohort script and pass the dataset-adjusted
+base seed to `seed`.
+
+Because the earlier workflow used base R `sample()`, exact fold labels also
+depend on the active R random-number generator and sampling implementation.
+The cross-fit configuration records the R version and `RNGkind()` along with
+the seed. Every returned profile is strictly out of fold. By default, aggregated
+profiles, fold diagnostics, and fold assignments are retained, while the
+larger repeat-level profile arrays are not. Fold generation restores the
+user's pre-existing global random-number state.
+
+# Missing values
+
+Calibration complete cases are method specific:
+
+- Po-EQuA and Kernel End-EQuA require finite CA and EA;
+- Kernel Ex-EQuA additionally requires every fitted conditioning variable.
+
+With `na_action = "omit"` (the default), incomplete rows are omitted with a
+counted warning. With `na_action = "fail"`, fitting stops. Cross-fitting
+restores omitted rows in their original positions with missing profiles and an
+incomplete-row flag.
+
+During prediction, qEA requires finite EA and finite method-specific
+conditioning variables. An incomplete row receives missing qEA values and an
+`incomplete_conditioning` diagnostic. If chronological age is omitted, qEA is
+still available and qEAA is not created; a non-finite supplied chronological
+age yields missing qEAA for that row.
+
+# Support behavior
+
+Kernel log weights are shifted by their finite maximum before exponentiation
+to avoid avoidable numerical underflow. When weights can be normalized, EQuA
+returns the kernel estimate without changing estimators.
+
+For normalized weights \(\widetilde w_i\), effective sample size is
+
+\[
+n_{\mathrm{eff}}
+=
+\frac{1}{\sum_i \widetilde w_i^2}.
+\]
+
+The default low-support threshold is `min_effective_n = 10`. This threshold is
+a diagnostic convention, not part of the quantile estimand. The supported
+actions are:
+
+- `"warn"` (default): return the kernel estimate and issue one summarized
+  warning;
+- `"na"`: replace low-support or invalid-kernel estimates with `NA`;
+- `"error"`: stop if any such row occurs;
+- `"nearest"`: explicitly replace such a row with the unweighted empirical
+  EAD quantiles of the nearest `nearest_k` calibration observations.
+
+Nearest-neighbor behavior never occurs under the default action.
+
+# Prediction diagnostics
+
+`equa_diagnostics()` exposes:
+
+- `outside_training_range`: outside at least one marginal calibration range;
+- `outside_range_by_variable`: the corresponding per-variable flags;
+- `effective_sample_size`;
+- `nearest_standardized_distance`: Euclidean distance in calibration-SD units;
+- `maximum_normalized_weight`;
+- `low_support`;
+- `weight_normalization_failed`;
+- `fallback_used`;
+- `incomplete_conditioning`.
+
+Marginal range flags do not characterize sparse regions inside a
+multidimensional range. Effective sample size, maximum normalized weight, and
+nearest standardized distance provide complementary support information.
+Unnormalized kernel-weight sums are not exposed as a comparison metric.
+
+# Data privacy and fitted objects
+
+Kernel prediction requires a fitted object to retain calibration-level EAD
+and scaled conditioning values, as well as bandwidth and transformation
+parameters. A saved `equa_fit` object may therefore contain participant-level
+information even when subject identifiers are absent. Cross-fitting results
+also contain participant-level inputs and profiles.
+
+The implementation follows these safeguards:
+
+- subject identifiers and unused variables are not accepted or stored;
+- `print()` and `summary()` do not display participant-level rows;
+- errors and warnings report counts rather than participant values;
+- no restricted fitted objects are included in the repository;
+- object documentation warns users to review disclosure risk before sharing.
+
+These safeguards do not make a fitted object anonymous. Users remain
+responsible for the governance of objects created from restricted data.
+
+# Implementation provenance
+
+The numerical definitions were translated into a package-level pure-R
+reference implementation from the EQuA internal reproducibility programs,
+especially:
+
+- `04_empirical_analysis/code/00_crossfit_helpers.R` for the weighted
+  empirical quantile, Kernel End bandwidth, and repeated age-stratified
+  cross-fitting;
+- `05_simulation/code/01_run_figure5_simulation.R` for dimension-dependent
+  bandwidths and the Po, Kernel End, and Kernel Ex formulations.
+
+The frozen reproduction project is not imported, sourced, or modified by the
+package. Independent regression tests restate the reference equations and
+compare their outputs with the package implementation.
+
+Intentional package-level safeguards relative to the analysis scripts are:
+numerically stabilized kernel normalization; no implicit nearest-neighbor
+fallback; robust strata reduction for small samples; privacy-safe S3 methods;
+and explicit support diagnostics.
+
+The public methodological source currently available is the JSM 2026 poster,
+*Epigenetic Quantile Age (EQuA) Clocks: A New Paradigm for Evaluating
+Biological Aging Acceleration*. The full manuscript is in preparation; its
+final citation will be added to `CITATION.cff`, `inst/CITATION`, and this
+vignette once approved.

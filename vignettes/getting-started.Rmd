@@ -1,0 +1,190 @@
+---
+title: "Getting Started with EQuA"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with EQuA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(EQuA)
+```
+
+# Status
+
+This vignette demonstrates the pure-R reference implementation. The package is
+still a development version, so numerical conventions are regression-tested
+but the public interface may evolve during manuscript preparation.
+
+# Required inputs
+
+EQuA requires:
+
+- chronological age;
+- an existing scalar estimated age;
+- optional numeric conditioning variables for Ex-EQuA.
+
+The package does not require methylation beta matrices and does not calculate
+the source age estimator.
+
+# Simulated example data
+
+```{r simulated-data}
+dat <- EQuA::simulated_equa_data
+str(dat)
+```
+
+The `sample_role` variable separates a calibration sample from a small
+application sample.
+
+```{r split-data}
+calibration <- subset(dat, sample_role == "calibration")
+application <- subset(dat, sample_role == "application")
+```
+
+# Fitting and prediction
+
+```{r fit-and-predict}
+fit <- fit_equa(
+  chronological_age = calibration$chronological_age,
+  estimated_age = calibration$estimated_age,
+  method = "kernel_end",
+  probs = seq(0.1, 0.9, by = 0.1)
+)
+
+profile <- predict(
+  fit,
+  new_estimated_age = application$estimated_age,
+  chronological_age = application$chronological_age
+)
+
+summary(fit)
+summary(profile)
+head(as.data.frame(profile, format = "long"))
+```
+
+# Adding conditioning variables
+
+Kernel Ex-EQuA conditions on estimated age and one or more named numeric
+variables. Prediction covariates must have the same names and order as the
+calibration covariates.
+
+```{r ex-equa}
+fit_ex <- fit_equa(
+  chronological_age = calibration$chronological_age,
+  estimated_age = calibration$estimated_age,
+  covariates = calibration["z"],
+  method = "kernel_ex",
+  probs = c(0.25, 0.5, 0.75)
+)
+
+profile_ex <- predict(
+  fit_ex,
+  new_estimated_age = application$estimated_age,
+  new_covariates = application["z"],
+  chronological_age = application$chronological_age
+)
+
+head(as.data.frame(profile_ex))
+```
+
+# Public GEO example data
+
+EQuA includes two compact real-data examples:
+
+```{r public-geo-data}
+gse40279 <- EQuA::gse40279_equa
+gse50660 <- EQuA::gse50660_equa
+
+dim(gse40279)
+dim(gse50660)
+head(gse40279)
+```
+
+Each object contains all public samples from its GEO series but retains only
+the GSM accession, chronological age, and an upstream Horvath v1 estimated
+age. The package does not contain the beta matrices and does not calculate the
+clock.
+
+For example, the first 500 GSE40279 samples can serve as a calibration set,
+with the remaining samples treated as new observations:
+
+```{r public-geo-fit}
+geo_calibration <- gse40279[seq_len(500), ]
+geo_application <- gse40279[-seq_len(500), ]
+
+geo_fit <- fit_equa(
+  chronological_age = geo_calibration$chronological_age,
+  estimated_age = geo_calibration$estimated_age,
+  method = "kernel_end",
+  probs = c(0.1, 0.5, 0.9)
+)
+
+geo_profile <- predict(
+  geo_fit,
+  new_estimated_age = geo_application$estimated_age,
+  chronological_age = geo_application$chronological_age
+)
+
+head(as.data.frame(geo_profile))
+```
+
+The split above is only a software demonstration, not a recommended scientific
+design. For profiles of every observation in an analysis sample, use
+`crossfit_equa()` so each observation is predicted strictly out of fold.
+GSE50660 used 351 of 353 Horvath model CpGs and no cohort-mean or
+K-nearest-neighbor imputation. See the installed help pages and the repository
+data-provenance document before scientific use.
+
+# Repeated cross-fitting
+
+Cross-fitting returns profiles for the calibration observations using only
+out-of-fold training data. Vignettes and automated checks use only a few
+repeats so they finish quickly. Research analyses may request more repeats
+explicitly.
+
+```{r cross-fitting}
+profile_cf <- crossfit_equa(
+  chronological_age = calibration$chronological_age,
+  estimated_age = calibration$estimated_age,
+  method = "kernel_end",
+  folds = 5,
+  repeats = 3,
+  seed = 2026,
+  keep_repeats = FALSE,
+  keep_fold_assignments = TRUE
+)
+
+summary(profile_cf)
+head(profile_cf$fold_diagnostics)
+```
+
+# Diagnostics
+
+Prediction output reports:
+
+- marginal training-range violations;
+- effective kernel sample size;
+- nearest standardized calibration distance;
+- maximum normalized kernel weight;
+- low-support and weight-normalization flags;
+- whether an explicitly requested fallback was used.
+
+No nearest-neighbor fallback will occur implicitly.
+
+```{r diagnostics}
+head(equa_diagnostics(profile))
+```
+
+# Data privacy
+
+An `equa_fit` object retains calibration-level EAD and conditioning values
+needed for future kernel prediction. It does not retain subject identifiers,
+and its print and summary methods do not display participant rows. The object
+can nevertheless contain sensitive participant-level information; review
+disclosure risk before saving or sharing it.
+
+See `vignette("method-specification", package = "EQuA")` for the exact
+statistical definitions, implementation provenance, and edge-case behavior.

@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: >-
+  Please cite the EQuA software and the JSM 2026 poster when using this
+  development repository.
+title: EQuA
+type: software
+version: 0.0.0.9000
+license: MIT
+authors:
+  - given-names: Menghan
+    family-names: Yi
+    email: menghany@umich.edu
+repository-code: https://github.com/Menghan898/EQuA
+url: https://github.com/Menghan898/EQuA
+preferred-citation:
+  type: conference-paper
+  title: >-
+    Epigenetic Quantile Age (EQuA) Clocks: A New Paradigm for Evaluating
+    Biological Aging Acceleration
+  authors:
+    - given-names: Menghan
+      family-names: Yi
+    - given-names: Canyi
+      family-names: Chen
+    - given-names: Yahui
+      family-names: Zhang
+    - given-names: Karen E.
+      family-names: Peterson
+    - given-names: Jaclyn M.
+      family-names: Goodrich
+    - given-names: Peter X.-K.
+      family-names: Song
+  year: 2026

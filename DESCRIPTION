@@ -1,0 +1,37 @@
+Package: EQuA
+Type: Package
+Title: Post-Hoc Quantile Calibration of Age Estimators
+Version: 0.0.0.9000
+Date: 2026-07-30
+Authors@R:
+    person(
+        given = "Menghan",
+        family = "Yi",
+        email = "menghany@umich.edu",
+        role = c("aut", "cre")
+    )
+Description: Provides a pure-R reference implementation of Epigenetic Quantile
+    Age (EQuA), a post-hoc quantile-calibration approach that transforms an
+    existing scalar age estimate into individual quantile-age and
+    quantile-age-acceleration profiles. Implements unconditional, endogenous
+    kernel, and extended kernel formulations together with repeated
+    cross-fitting and support diagnostics. Although motivated by epigenetic
+    clocks, the framework applies whenever chronological age and an existing
+    estimated age are available.
+Depends:
+    R (>= 3.5.0)
+License: MIT + file LICENSE
+URL: https://github.com/Menghan898/EQuA
+BugReports: https://github.com/Menghan898/EQuA/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Imports:
+    stats
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+RoxygenNote: 7.3.3
