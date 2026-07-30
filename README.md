@@ -180,9 +180,8 @@ See the [method
 specification](vignettes/method-specification.Rmd#data-privacy-and-fitted-objects)
 for the implemented safeguards and remaining user responsibilities.
 
-## Development documentation
+## Project documentation
 
-- [Development plan](development/development-plan.md)
 - [Data provenance](development/data-provenance.md)
 - [Public GEO data quality
   review](development/geo-example-data-quality.md)
