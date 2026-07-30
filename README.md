@@ -76,7 +76,7 @@ summary(profile)
 #>   Low-support rows:   0
 #>   Outside-range rows: 3
 #>   Incomplete rows:    0
-plot(profile, rows = 1:6)
+plot(profile, type = "qeaa", rows = 1:6)
 ```
 
 ![](man/figures/README-minimal-workflow-1.png)<!-- -->

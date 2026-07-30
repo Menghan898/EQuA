@@ -76,7 +76,7 @@ profile <- predict(
 )
 
 summary(profile)
-plot(profile, rows = 1:6)
+plot(profile, type = "qeaa", rows = 1:6)
 ```
 
 Repeated cross-fitting produces strictly out-of-fold profiles. A small number
