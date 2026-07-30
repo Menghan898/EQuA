@@ -60,7 +60,7 @@ library(EQuA)
 
 dat <- EQuA::simulated_equa_data
 calibration <- subset(dat, sample_role == "calibration")
-application <- subset(dat, sample_role == "application")
+new_data <- subset(dat, sample_role == "prediction")
 
 fit <- fit_equa(
   chronological_age = calibration$chronological_age,
@@ -71,8 +71,8 @@ fit <- fit_equa(
 
 profile <- predict(
   fit,
-  new_estimated_age = application$estimated_age,
-  chronological_age = application$chronological_age
+  new_estimated_age = new_data$estimated_age,
+  chronological_age = new_data$chronological_age
 )
 
 summary(profile)

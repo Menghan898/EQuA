@@ -14,7 +14,7 @@ estimated_age <- chronological_age - age_dependent_bias +
 
 simulated_equa_data <- data.frame(
   sample_id = sprintf("sim_%03d", seq_len(n)),
-  sample_role = rep(c("calibration", "application"), c(200L, 40L)),
+  sample_role = rep(c("calibration", "prediction"), c(200L, 40L)),
   chronological_age = round(chronological_age, 3),
   estimated_age = round(estimated_age, 3),
   z = round(z, 4),

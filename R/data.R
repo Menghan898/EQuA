@@ -7,7 +7,7 @@
 #' @format A data frame with 240 rows and 5 variables:
 #' \describe{
 #'   \item{sample_id}{Synthetic sample identifier.}
-#'   \item{sample_role}{Either `"calibration"` or `"application"`.}
+#'   \item{sample_role}{Either `"calibration"` or `"prediction"`.}
 #'   \item{chronological_age}{Simulated chronological age in years.}
 #'   \item{estimated_age}{Simulated scalar estimated age in years.}
 #'   \item{z}{Simulated continuous conditioning variable.}

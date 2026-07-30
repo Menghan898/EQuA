@@ -20,7 +20,7 @@ Package data contain inputs for examples, not precomputed qEA or qEAA results.
 `data-raw/generate_simulated_equa_data.R`.
 
 It contains only synthetic identifiers, chronological age, estimated age, a
-continuous conditioning variable, and a calibration/application role. It does
+continuous conditioning variable, and a calibration/prediction role. It does
 not reproduce or summarize any real cohort.
 
 ## Public GEO examples

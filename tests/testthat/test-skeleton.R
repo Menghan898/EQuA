@@ -35,7 +35,7 @@ test_that("simulated example data are available and non-sensitive", {
       "z"
     )
   )
-  expect_setequal(unique(dat$sample_role), c("calibration", "application"))
+  expect_setequal(unique(dat$sample_role), c("calibration", "prediction"))
 })
 
 test_that("public GEO examples have the documented compact interface", {
@@ -67,7 +67,7 @@ test_that("public GEO examples have the documented compact interface", {
 test_that("public GEO example can run through the package interface", {
   dat <- EQuA::gse40279_equa
   calibration <- dat[seq_len(500), ]
-  application <- dat[501:506, ]
+  new_data <- dat[501:506, ]
 
   fit <- fit_equa(
     chronological_age = calibration$chronological_age,
@@ -77,8 +77,8 @@ test_that("public GEO example can run through the package interface", {
   )
   profile <- predict(
     fit,
-    new_estimated_age = application$estimated_age,
-    chronological_age = application$chronological_age
+    new_estimated_age = new_data$estimated_age,
+    chronological_age = new_data$chronological_age
   )
 
   expect_s3_class(profile, "equa_profile")

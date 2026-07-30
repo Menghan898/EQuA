@@ -187,9 +187,9 @@
 #'   simulated_equa_data,
 #'   sample_role == "calibration"
 #' )
-#' application <- subset(
+#' new_data <- subset(
 #'   simulated_equa_data,
-#'   sample_role == "application"
+#'   sample_role == "prediction"
 #' )
 #' fit <- fit_equa(
 #'   chronological_age = calibration$chronological_age,
@@ -199,8 +199,8 @@
 #' )
 #' profile <- predict(
 #'   fit,
-#'   new_estimated_age = application$estimated_age,
-#'   chronological_age = application$chronological_age
+#'   new_estimated_age = new_data$estimated_age,
+#'   chronological_age = new_data$chronological_age
 #' )
 #' head(as.data.frame(profile))
 #'
