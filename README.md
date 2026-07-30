@@ -1,12 +1,14 @@
 
 # EQuA
 
-EQuA provides post-hoc quantile calibration of an existing age
-estimator, transforming a scalar estimated age into individual
-quantile-age and quantile-age-acceleration profiles.
+EQuA is a distributional framework that transforms a single estimated
+age into an individual percentile-resolved aging profile, represented
+through quantile age (qEA) and quantile age acceleration (qEAA).
 
-Although motivated by epigenetic clocks, the package can be applied
-whenever chronological age and an existing estimated age are available.
+The framework extends an existing age estimator without refitting the
+source model. Although developed in the context of epigenetic clocks,
+it can be applied whenever chronological age and an existing estimated
+age are available.
 
 > **Development version**
 >
