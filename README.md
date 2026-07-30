@@ -6,9 +6,9 @@ age into an individual percentile-resolved aging profile, represented
 through quantile age (qEA) and quantile age acceleration (qEAA).
 
 The framework extends an existing age estimator without refitting the
-source model. Although developed in the context of epigenetic clocks,
-it can be applied whenever chronological age and an existing estimated
-age are available.
+source model. Although developed in the context of epigenetic clocks, it
+can be applied whenever chronological age and an existing estimated age
+are available.
 
 > **Development version**
 >
@@ -150,9 +150,9 @@ limitations.
 
 ## Supported methods
 
-| Method          | Conditional EAD distribution               |
-|:----------------|:-------------------------------------------|
-| Po-EQuA         | $Q_\tau(\mathrm{EAD})$                     |
+| Method   | Conditional EAD distribution             |
+|:---------|:-----------------------------------------|
+| Po-EQuA  | $Q_\tau(\mathrm{EAD})$                   |
 | End-EQuA | $Q_\tau(\mathrm{EAD}\mid\mathrm{EA})$    |
 | Ex-EQuA  | $Q_\tau(\mathrm{EAD}\mid\mathrm{EA}, Z)$ |
 
