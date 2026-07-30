@@ -21,6 +21,44 @@ test_that("fit print and summary methods do not reveal participant values", {
   expect_false("subject_id" %in% names(fit))
 })
 
+test_that("reader-facing output uses formal EQuA method names", {
+  age <- c(10, 13, 16, 19, 22)
+  estimated <- c(9, 10, 13, 17, 20)
+  cases <- list(
+    list(method = "kernel_end", label = "End-EQuA", covariates = NULL),
+    list(
+      method = "kernel_ex",
+      label = "Ex-EQuA",
+      covariates = data.frame(z = seq_along(age))
+    )
+  )
+
+  for (case in cases) {
+    fit <- fit_equa(
+      age,
+      estimated,
+      covariates = case$covariates,
+      method = case$method,
+      min_effective_n = 1
+    )
+    profile <- predict(
+      fit,
+      new_estimated_age = estimated,
+      new_covariates = case$covariates
+    )
+    output <- c(
+      capture.output(print(fit)),
+      capture.output(print(summary(fit))),
+      capture.output(print(profile)),
+      capture.output(print(summary(profile)))
+    )
+
+    expect_match(paste(output, collapse = " "), case$label, fixed = TRUE)
+    expect_false(any(grepl(case$method, output, fixed = TRUE)))
+    expect_identical(fit$method, case$method)
+  }
+})
+
 test_that("profile coercion supports wide and long layouts", {
   fit <- fit_equa(
     chronological_age = c(10, 13, 16, 19),

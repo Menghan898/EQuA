@@ -34,7 +34,8 @@ estimator, in the same units as \code{chronological_age}.}
 \item{covariates}{Optional numeric vector, matrix, or data frame. Required
 only for \code{method = "kernel_ex"}.}
 
-\item{method}{One of \code{"kernel_end"}, \code{"po"}, or \code{"kernel_ex"}.}
+\item{method}{One of \code{"kernel_end"} (End-EQuA), \code{"po"} (Po-EQuA), or
+\code{"kernel_ex"} (Ex-EQuA).}
 
 \item{probs}{Strictly increasing percentile levels between zero and one.}
 

@@ -22,7 +22,7 @@ test_that("Po-EQuA matches a hand-computed empirical quantile", {
   expect_false(any(profile$diagnostics$fallback_used))
 })
 
-test_that("Kernel End-EQuA matches the frozen Gaussian-kernel calculation", {
+test_that("End-EQuA matches the frozen Gaussian-kernel calculation", {
   age <- c(20, 25, 31, 38, 46, 55)
   estimated <- c(19, 27, 30, 40, 43, 58)
   ead <- age - estimated
@@ -52,7 +52,7 @@ test_that("Kernel End-EQuA matches the frozen Gaussian-kernel calculation", {
   expect_false(any(profile$diagnostics$fallback_used))
 })
 
-test_that("Kernel Ex-EQuA uses the product Gaussian kernel", {
+test_that("Ex-EQuA uses the product Gaussian kernel", {
   age <- c(20, 25, 31, 38, 46, 55)
   estimated <- c(19, 27, 30, 40, 43, 58)
   z <- c(-1.2, 0.1, -0.4, 1.1, 0.7, 1.8)

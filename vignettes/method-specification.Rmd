@@ -74,9 +74,9 @@ The implemented formulations are:
 
 1. **Po-EQuA:** \(\mathcal{C}=\varnothing\), giving
    \(Q_\tau(\mathrm{EAD})\).
-2. **Kernel End-EQuA:** \(\mathcal{C}=\mathrm{EA}\), giving
+2. **End-EQuA:** \(\mathcal{C}=\mathrm{EA}\), giving
    \(Q_\tau\{\mathrm{EAD}\mid\mathrm{EA}\}\).
-3. **Kernel Ex-EQuA:** \(\mathcal{C}=(\mathrm{EA},Z)\), giving
+3. **Ex-EQuA:** \(\mathcal{C}=(\mathrm{EA},Z)\), giving
    \(Q_\tau\{\mathrm{EAD}\mid\mathrm{EA},Z\}\).
 
 The current Ex interface accepts named numeric conditioning variables.
@@ -147,7 +147,7 @@ h_j =
 
 where \(n\) is the number of complete training rows, \(d\) is the number of
 conditioning dimensions, and \(s_j\) is the sample standard deviation. Thus
-Kernel End uses exponent \(1/5\), while Kernel Ex uses \(1/(4+d)\). Within
+End-EQuA uses exponent \(1/5\), while Ex-EQuA uses \(1/(4+d)\). Within
 cross-fitting, every training fold selects its own bandwidths. User-supplied
 bandwidths must be positive, finite, have one value per conditioning
 dimension, and are interpreted in the original variable units.
@@ -213,8 +213,8 @@ user's pre-existing global random-number state.
 
 Calibration complete cases are method specific:
 
-- Po-EQuA and Kernel End-EQuA require finite CA and EA;
-- Kernel Ex-EQuA additionally requires every fitted conditioning variable.
+- Po-EQuA and End-EQuA require finite CA and EA;
+- Ex-EQuA additionally requires every fitted conditioning variable.
 
 With `na_action = "omit"` (the default), incomplete rows are omitted with a
 counted warning. With `na_action = "fail"`, fitting stops. Cross-fitting
@@ -299,10 +299,10 @@ reference implementation from the EQuA internal reproducibility programs,
 especially:
 
 - `04_empirical_analysis/code/00_crossfit_helpers.R` for the weighted
-  empirical quantile, Kernel End bandwidth, and repeated age-stratified
+  empirical quantile, End-EQuA bandwidth, and repeated age-stratified
   cross-fitting;
 - `05_simulation/code/01_run_figure5_simulation.R` for dimension-dependent
-  bandwidths and the Po, Kernel End, and Kernel Ex formulations.
+  bandwidths and the Po-EQuA, End-EQuA, and Ex-EQuA formulations.
 
 The frozen reproduction project is not imported, sourced, or modified by the
 package. Independent regression tests restate the reference equations and

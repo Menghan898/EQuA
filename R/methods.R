@@ -43,7 +43,7 @@ equa_diagnostics <- function(x, by_variable = FALSE) {
 #' @export
 print.equa_fit <- function(x, ...) {
   cat("<equa_fit>\n")
-  cat("  Method:               ", x$method, "\n", sep = "")
+  cat("  Method:               ", .equa_method_label(x$method), "\n", sep = "")
   cat("  Calibration rows:     ", x$n_calibration, "\n", sep = "")
   cat("  Omitted rows:         ", x$n_omitted, "\n", sep = "")
   cat("  Percentile levels:    ", length(x$probs), "\n", sep = "")
@@ -76,7 +76,7 @@ summary.equa_fit <- function(object, ...) {
 #' @export
 print.summary_equa_fit <- function(x, ...) {
   cat("EQuA fit summary\n")
-  cat("  Method:           ", x$method, "\n", sep = "")
+  cat("  Method:           ", .equa_method_label(x$method), "\n", sep = "")
   cat("  Calibration rows: ", x$n_calibration, "\n", sep = "")
   cat("  Omitted rows:     ", x$n_omitted, "\n", sep = "")
   cat("  Probabilities:    ", paste(x$probs, collapse = ", "), "\n", sep = "")
@@ -98,7 +98,7 @@ print.summary_equa_fit <- function(x, ...) {
 #' @export
 print.equa_profile <- function(x, ...) {
   cat("<", class(x)[[1L]], ">\n", sep = "")
-  cat("  Method:            ", x$method, "\n", sep = "")
+  cat("  Method:            ", .equa_method_label(x$method), "\n", sep = "")
   cat("  Observations:      ", nrow(x$qea), "\n", sep = "")
   cat("  Percentile levels: ", ncol(x$qea), "\n", sep = "")
   cat(
@@ -164,7 +164,7 @@ summary.equa_crossfit <- function(object, ...) {
 print.summary_equa_profile <- function(x, ...) {
   cat("EQuA profile summary\n")
   cat("  Object class:       ", x$class, "\n", sep = "")
-  cat("  Method:             ", x$method, "\n", sep = "")
+  cat("  Method:             ", .equa_method_label(x$method), "\n", sep = "")
   cat("  Observations:       ", x$n, "\n", sep = "")
   cat("  qEA available:      ", sum(x$qea_available), "\n", sep = "")
   cat("  qEAA available:     ", sum(x$qeaa_available), "\n", sep = "")

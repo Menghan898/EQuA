@@ -9,7 +9,8 @@
 #'   estimator, in the same units as `chronological_age`.
 #' @param covariates Optional numeric vector, matrix, or data frame. Required
 #'   only for `method = "kernel_ex"`.
-#' @param method One of `"kernel_end"`, `"po"`, or `"kernel_ex"`.
+#' @param method One of `"kernel_end"` (End-EQuA), `"po"` (Po-EQuA), or
+#'   `"kernel_ex"` (Ex-EQuA).
 #' @param probs Strictly increasing percentile levels between zero and one.
 #' @param bandwidth Optional bandwidth vector in the original units of the
 #'   conditioning variables. The default applies the documented rule separately

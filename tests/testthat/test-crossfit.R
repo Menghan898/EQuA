@@ -50,7 +50,7 @@ test_that("fold construction matches the frozen stratified algorithm", {
   expect_setequal(unique(result), 1:3)
 })
 
-test_that("repeated Kernel End cross-fitting matches a reference implementation", {
+test_that("repeated End-EQuA cross-fitting matches a reference implementation", {
   age <- seq(18, 82, length.out = 60)
   estimated <- age + 2.5 * sin(age / 8) + seq(-0.5, 0.5, length.out = 60)
   probs <- c(0.2, 0.5, 0.8)
@@ -116,7 +116,7 @@ test_that("cross-fitting can omit large audit components", {
   expect_equal(nrow(result$diagnostics), length(age))
 })
 
-test_that("Kernel Ex cross-fitting handles multiple conditioning variables", {
+test_that("Ex-EQuA cross-fitting handles multiple conditioning variables", {
   age <- seq(20, 80, length.out = 60)
   estimated <- age + 2 * sin(age / 8)
   covariates <- data.frame(

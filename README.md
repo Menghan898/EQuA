@@ -69,7 +69,7 @@ profile <- predict(
 summary(profile)
 #> EQuA profile summary
 #>   Object class:       equa_profile
-#>   Method:             kernel_end
+#>   Method:             End-EQuA
 #>   Observations:       40
 #>   qEA available:      40
 #>   qEAA available:     40
@@ -99,7 +99,7 @@ profile_cf <- crossfit_equa(
 summary(profile_cf)
 #> EQuA profile summary
 #>   Object class:       equa_crossfit
-#>   Method:             kernel_end
+#>   Method:             End-EQuA
 #>   Observations:       200
 #>   qEA available:      200
 #>   qEAA available:     200
@@ -127,7 +127,7 @@ definitions and implementation conventions.
 
 The current development release supports:
 
-- Po-EQuA, kernel End-EQuA, and kernel Ex-EQuA;
+- Po-EQuA, End-EQuA, and Ex-EQuA;
 - calibration-sample fitting and prediction for new observations;
 - repeated K-fold cross-fitting;
 - qEA and qEAA profile summaries and visualization.

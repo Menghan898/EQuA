@@ -67,9 +67,9 @@ head(as.data.frame(profile, format = "long"))
 
 # Adding conditioning variables
 
-Kernel Ex-EQuA conditions on estimated age and one or more named numeric
-variables. Prediction covariates must have the same names and order as the
-calibration covariates.
+Ex-EQuA uses kernel weighting to condition on estimated age and one or more
+named numeric variables. Prediction covariates must have the same names and
+order as the calibration covariates.
 
 ```{r ex-equa}
 fit_ex <- fit_equa(

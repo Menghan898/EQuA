@@ -116,7 +116,7 @@ for formal definitions and implementation conventions.
 
 The current development release supports:
 
-- Po-EQuA, kernel End-EQuA, and kernel Ex-EQuA;
+- Po-EQuA, End-EQuA, and Ex-EQuA;
 - calibration-sample fitting and prediction for new observations;
 - repeated K-fold cross-fitting;
 - qEA and qEAA profile summaries and visualization.

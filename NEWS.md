@@ -4,7 +4,7 @@
 
 - Added the initial package skeleton, documentation layout, citation metadata,
   and continuous-integration configuration.
-- Implemented Po-EQuA, Kernel End-EQuA, and Kernel Ex-EQuA through
+- Implemented Po-EQuA, End-EQuA, and Ex-EQuA through
   `fit_equa()` and `predict.equa_fit()`.
 - Implemented repeated chronological-age-stratified K-fold profiles through
   `crossfit_equa()`.

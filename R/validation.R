@@ -1,5 +1,15 @@
 .equa_methods <- c("kernel_end", "po", "kernel_ex")
 
+.equa_method_label <- function(method) {
+  switch(
+    method,
+    po = "Po-EQuA",
+    kernel_end = "End-EQuA",
+    kernel_ex = "Ex-EQuA",
+    method
+  )
+}
+
 .match_equa_method <- function(method) {
   match.arg(method, .equa_methods)
 }
