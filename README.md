@@ -151,8 +151,8 @@ limitations.
 | Method          | Conditional EAD distribution               |
 |:----------------|:-------------------------------------------|
 | Po-EQuA         | $Q_\tau(\mathrm{EAD})$                     |
-| Kernel End-EQuA | $Q_\tau\{\mathrm{EAD}\mid\mathrm{EA}\}$    |
-| Kernel Ex-EQuA  | $Q_\tau\{\mathrm{EAD}\mid\mathrm{EA}, Z\}$ |
+| End-EQuA | $Q_\tau(\mathrm{EAD}\mid\mathrm{EA})$    |
+| Ex-EQuA  | $Q_\tau(\mathrm{EAD}\mid\mathrm{EA}, Z)$ |
 
 See the [statistical method
 specification](vignettes/method-specification.Rmd) for formal
